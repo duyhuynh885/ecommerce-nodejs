@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 const dev = {
     app: {
@@ -9,7 +9,7 @@ const dev = {
         port: process.env.DEV_DB_PORT,
         name: process.env.DEV_DB_NAME,
     },
-}
+};
 
 const pro = {
     app: {
@@ -20,8 +20,8 @@ const pro = {
         port: process.env.PRO_DB_PORT,
         name: process.env.PRO_DB_NAME,
     },
-}
-const config = { dev, pro }
-const env = process.env.NODE_ENV || 'dev'
+};
+const config = { dev, pro };
+const env = process.env.NODE_ENV || 'dev';
 
-module.exports = config[env]
+module.exports = config[env];
