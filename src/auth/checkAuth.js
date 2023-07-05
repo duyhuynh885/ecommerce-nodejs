@@ -37,7 +37,6 @@ const permission = (permission) => {
         }
 
         const validPermission = req.objKey.permissions.includes(permission);
-        console.log("🚀 ~ file: checkAuth.js:40 ~ return ~ req.objKey.permissions:", req.objKey.permissions)
 
         if (!validPermission) {
             return res.status(403).json({
@@ -49,7 +48,13 @@ const permission = (permission) => {
     };
 };
 
+const asyncHandler = (fn) => {
+    return (req, res, next) => {
+        fn(req, res, next).catch(next);
+    };
+};
 module.exports = {
     apiKey,
     permission,
+    asyncHandler,
 };
