@@ -1,41 +1,39 @@
-'use strict'
+'use strict';
 
-const shopModel = require('../models/shop.model')
-const bcrypt = require('bcrypt')
-const crypto = require('crypto')
-const keytokenModel = require('../models/keytoken.model')
-const KeyTokenService = require('./keyToken.service')
-const { createTokenPair } = require('../auth/authUtils')
-const { waitForDebugger } = require('inspector')
-const { getInfoData } = require('../utils')
+const shopModel = require('../models/shop.model');
+const bcrypt = require('bcrypt');
+const crypto = require('crypto');
+const KeyTokenService = require('./keyToken.service');
+const { createTokenPair } = require('../auth/authUtils');
+const { getInfoData } = require('../utils');
 
 const RoleShop = {
     SHOP: 'SHOP',
     WRITER: 'WRITER',
     EDITOR: 'EDITOR',
     ADMIN: 'ADMIN',
-}
+};
 
 class AccessService {
     static signUp = async ({ name, email, password }) => {
         try {
             // step 1: check email exists
-            const holderShop = await shopModel.findOne({ email }).lean()
-            console.log(holderShop)
+            const holderShop = await shopModel.findOne({ email }).lean();
+            console.log(holderShop);
             if (holderShop) {
                 return {
                     code: 'xxxx',
                     message: 'Shop already registered!',
                     status: 'error',
-                }
+                };
             }
-            const passwordHash = await bcrypt.hash(password, 10)
+            const passwordHash = await bcrypt.hash(password, 10);
             const newShop = await shopModel.create({
                 name,
                 email,
                 password: passwordHash,
                 roles: [RoleShop.SHOP],
-            })
+            });
 
             if (newShop) {
                 const { privateKey, publicKey } = crypto.generateKeyPairSync(
@@ -51,7 +49,7 @@ class AccessService {
                             format: 'pem',
                         },
                     }
-                )
+                );
 
                 // created privateKey, publicKey
 
@@ -59,22 +57,22 @@ class AccessService {
                 const publicKeyString = await KeyTokenService.createKeyToken({
                     userId: newShop._id,
                     publicKey,
-                })
+                });
 
                 if (!publicKeyString) {
                     return {
                         code: 'xxxx',
                         message: 'publicKeyString error',
-                    }
+                    };
                 }
 
-                const publicKeyObject = crypto.createPublicKey(publicKeyString)
+                const publicKeyObject = crypto.createPublicKey(publicKeyString);
 
                 const tokens = await createTokenPair(
                     { userId: newShop._id, email },
                     publicKeyObject,
                     privateKey
-                )
+                );
 
                 return {
                     code: 201,
@@ -85,21 +83,21 @@ class AccessService {
                         }),
                         tokens,
                     },
-                }
+                };
             }
 
             return {
                 code: 200,
                 metadata: null,
-            }
+            };
         } catch (error) {
             return {
                 code: 'xxx',
                 message: error.message,
                 status: 'error',
-            }
+            };
         }
-    }
+    };
 }
 
-module.exports = AccessService
+module.exports = AccessService;

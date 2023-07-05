@@ -1,9 +1,9 @@
-'use strict'
+'use strict';
 
-const { Schema, model } = require('mongoose') // Erase if already required
+const { Schema, model } = require('mongoose'); // Erase if already required
 
-const DOCUMENT_NAME = 'Key'
-const COLLECTION_NAME = 'Keys'
+const DOCUMENT_NAME = 'Key';
+const COLLECTION_NAME = 'Keys';
 
 // Declare the Schema of the Mongo model
 const keyTokenSchema = new Schema(
@@ -26,7 +26,7 @@ const keyTokenSchema = new Schema(
         collection: COLLECTION_NAME,
         timestamps: true,
     }
-)
+);
 
 //Export the model
-module.exports = model(DOCUMENT_NAME, keyTokenSchema)
+module.exports = model(DOCUMENT_NAME, keyTokenSchema);
