@@ -17,9 +17,17 @@ const keyTokenSchema = new Schema(
             type: String,
             required: true,
         },
-        refreshToken: {
+        privateKey: {
+            type: String,
+            required: true,
+        },
+        refreshTokensUsed: {
             type: Array,
-            default: [],
+            default: [], // nhưng refreshToken da su dung
+        },
+        refreshToken: {
+            type: String,
+            required: true,
         },
     },
     {
