@@ -53,7 +53,7 @@ const clothingSchema = new Schema(
         size: String,
         material: String,
     },
-    { collection: 'clothes', timestamps: true }
+    { collection: 'Clothes', timestamps: true }
 );
 
 // define the product type = clothing
@@ -64,7 +64,7 @@ const electronicSchema = new Schema(
         model: String,
         color: String,
     },
-    { collection: 'electronic', timestamps: true }
+    { collection: 'Electronic', timestamps: true }
 );
 
 module.exports = {
