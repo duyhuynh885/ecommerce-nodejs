@@ -26,6 +26,50 @@ class AccessService {
      * Check this token used?
      * @param {*} refreshToken
      */
+    static handlerRefreshTokenV2 = async ({ refreshToken, user, keyStore }) => {
+        const { userId, email } = user;
+
+        if (keyStore.refreshTokensUsed.includes(refreshToken)) {
+            await KeyTokenService.deleteKeyByUserId(userId);
+            throw new ForbiddenError(
+                'Something wrong happen!! Please try login'
+            );
+        }
+
+        if (keyStore.refreshToken !== refreshToken) {
+            throw new AuthFailureError('Shop not registered');
+        }
+
+        const foundShop = await findByEmail({ email });
+        if (!foundShop) throw new AuthFailureError('Shop not registered');
+
+        // create 1 cap moi
+        const tokens = await createTokenPair(
+            { userId, email },
+            keyStore.publicKey,
+            keyStore.privateKey
+        );
+
+        // update token
+        await keyStore.updateOne({
+            $set: {
+                refreshToken: tokens.refreshToken,
+            },
+            $addToSet: {
+                refreshTokensUsed: refreshToken, // da duoc su dung de lay token moi roi
+            },
+        });
+
+        return {
+            user,
+            tokens,
+        };
+    };
+
+    /**
+     * Check this token used?
+     * @param {*} refreshToken
+     */
     static handlerRefreshToken = async (refreshToken) => {
         // check xem token nay da duoc su dung chua?
         const foundToken = await KeyTokenService.findByRefreshTokenUsed(
@@ -58,9 +102,9 @@ class AccessService {
             refreshToken,
             holderToken.privateKey
         );
+
         // check userId
         const foundShop = await findByEmail({ email });
-        console.log(123)
         if (!foundShop) throw new AuthFailureError('Shop not registered');
 
         // create 1 cap moi
